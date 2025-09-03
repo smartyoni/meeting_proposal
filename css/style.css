@@ -38,6 +38,28 @@ body {
 }
 
 /* 모바일 탭 네비게이션 (기본 숨김) */
+/* 모바일 저장된 제안서 섹션 */
+.mobile-saved-section {
+    display: none;
+    background: white;
+    border-radius: 12px;
+    border: 2px solid #000000;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.mobile-saved-header h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.mobile-saved-list {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
 .mobile-tabs {
     display: none;
     background: white;
@@ -484,6 +506,14 @@ body {
         gap: 4px;
     }
     
+    .mobile-saved-section {
+        display: none;
+    }
+    
+    .mobile-saved-section.active {
+        display: block;
+    }
+    
     /* 모바일에서 인라인 폼을 세로로 배치 */
     .form-row {
         flex-direction: column;
@@ -809,50 +839,26 @@ body {
 
 /* 사이드바 반응형 디자인 */
 @media (max-width: 768px) {
+    /* 모바일에서는 사이드바 토글 버튼 숨김 */
     .sidebar-toggle {
-        top: 15px;
-        left: 15px;
-        padding: 10px 12px;
-        font-size: 12px;
+        display: none;
     }
     
+    /* 모바일에서는 사이드바도 숨김 */
     .sidebar {
-        width: 280px;
+        display: none;
     }
     
-    .sidebar-header {
-        padding: 15px;
-    }
-    
-    .sidebar-header h3 {
-        font-size: 16px;
-    }
-    
-    .saved-proposal-item {
-        padding: 12px 15px;
-    }
-    
-    .proposal-info h4 {
-        font-size: 13px;
-    }
-    
-    .proposal-info p {
-        font-size: 11px;
-    }
-    
-    .btn-load, .btn-delete {
-        padding: 4px 8px;
-        font-size: 11px;
+    .sidebar-overlay {
+        display: none;
     }
 }
 
 @media (max-width: 480px) {
-    .sidebar {
-        width: calc(100vw - 20px);
-        left: -100vw;
-    }
-    
-    .sidebar.open {
-        left: 0;
+    /* 모바일에서는 사이드바 관련 요소들 모두 숨김 */
+    .sidebar-toggle,
+    .sidebar,
+    .sidebar-overlay {
+        display: none !important;
     }
 }

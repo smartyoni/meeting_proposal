@@ -14,6 +14,7 @@ class ProposalApp {
         this.setupEventListeners();
         this.updatePreview();
         this.updateSavedProposalsList();
+        this.updateMobileSavedProposalsList();
         console.log('매물 제안서 앱 초기화 완료');
     }
 
@@ -386,8 +387,8 @@ class ProposalApp {
 
     // 전체 필드 초기화
     resetAllFields() {
-        // 확인 대화상자
-        if (!confirm('모든 입력 내용을 초기화하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.')) {
+        // 확인 대화상자 - 저장된 제안서는 삭제되지 않음을 명시
+        if (!confirm('현재 입력 중인 내용을 초기화하시겠습니까?\n\n⚠️ 저장된 제안서 목록은 유지됩니다.\n이 작업은 되돌릴 수 없습니다.')) {
             return;
         }
 
@@ -403,18 +404,19 @@ class ProposalApp {
         // 기본 1개 매물 다시 생성
         this.createInitialProperties();
 
-        // 로컬 스토리지 초기화
+        // 현재 입력 폼 자동저장 데이터만 삭제 (저장된 제안서 목록은 보존)
         localStorage.removeItem(CONFIG.app.storage.customerData);
         localStorage.removeItem(CONFIG.app.storage.propertyData);
+        // 중요: savedProposals는 삭제하지 않음!
 
         // 미리보기 업데이트
         this.updatePreview();
 
-        console.log('모든 필드가 초기화되었습니다.');
+        console.log('입력 필드가 초기화되었습니다.');
         
-        // 성공 메시지 표시 (선택사항)
+        // 성공 메시지 표시
         setTimeout(() => {
-            alert('✅ 모든 내용이 초기화되었습니다.');
+            alert('✅ 입력 내용이 초기화되었습니다.\n저장된 제안서 목록은 그대로 유지됩니다.');
         }, 100);
     }
 
@@ -534,6 +536,7 @@ class ProposalApp {
         localStorage.setItem('savedProposals', JSON.stringify(savedProposals));
         
         this.updateSavedProposalsList();
+        this.updateMobileSavedProposalsList();
         alert(`"${customerName}" 고객님의 제안서가 저장되었습니다.`);
     }
 
@@ -633,6 +636,7 @@ class ProposalApp {
             const filteredProposals = savedProposals.filter(p => p.id !== proposalId);
             localStorage.setItem('savedProposals', JSON.stringify(filteredProposals));
             this.updateSavedProposalsList();
+            this.updateMobileSavedProposalsList();
             alert('제안서가 삭제되었습니다.');
         }
     }
@@ -640,6 +644,40 @@ class ProposalApp {
     // 저장된 제안서 목록 업데이트
     updateSavedProposalsList() {
         const listContainer = document.getElementById('savedProposalsList');
+        const savedProposals = this.getSavedProposals();
+        
+        if (savedProposals.length === 0) {
+            listContainer.innerHTML = '<div class="empty-list">저장된 제안서가 없습니다.</div>';
+            return;
+        }
+
+        let html = '';
+        savedProposals.forEach(proposal => {
+            const shortDate = proposal.meetingDate ? 
+                new Date(proposal.meetingDate).toLocaleDateString('ko-KR') : '미지정';
+            
+            html += `
+                <div class="saved-proposal-item">
+                    <div class="proposal-info" onclick="app.loadProposal(${proposal.id})">
+                        <h4>${proposal.customerName || '이름 없음'}</h4>
+                        <p>미팅일시: ${shortDate} | 저장: ${proposal.savedAt}</p>
+                    </div>
+                    <div class="proposal-actions">
+                        <button class="btn-load" onclick="app.loadProposal(${proposal.id})">불러오기</button>
+                        <button class="btn-delete" onclick="app.deleteProposal(${proposal.id})">삭제</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        listContainer.innerHTML = html;
+    }
+
+    // 모바일 저장된 제안서 목록 업데이트
+    updateMobileSavedProposalsList() {
+        const listContainer = document.getElementById('mobileSavedProposalsList');
+        if (!listContainer) return;
+        
         const savedProposals = this.getSavedProposals();
         
         if (savedProposals.length === 0) {
@@ -688,16 +726,28 @@ function switchTab(tab) {
     tabButtons.forEach(btn => btn.classList.remove('active'));
     document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
     
-    // 섹션 표시/숨김
+    // 모든 섹션 숨기기
+    const savedSection = document.getElementById('mobile-saved-section');
+    inputSection.classList.remove('active');
+    previewSection.classList.remove('active');
+    if (savedSection) savedSection.classList.remove('active');
+    
+    // 선택된 섹션 표시
     if (tab === 'input') {
         inputSection.classList.add('active');
-        previewSection.classList.remove('active');
-    } else {
-        inputSection.classList.remove('active');
+    } else if (tab === 'preview') {
         previewSection.classList.add('active');
         // 미리보기 탭으로 전환 시 미리보기 업데이트
         if (app) {
             app.updatePreview();
+        }
+    } else if (tab === 'saved') {
+        if (savedSection) {
+            savedSection.classList.add('active');
+            // 저장된 목록 업데이트
+            if (app) {
+                app.updateMobileSavedProposalsList();
+            }
         }
     }
     
@@ -767,8 +817,14 @@ function saveProposal() {
     }
 }
 
-// 사이드바 토글
+// 사이드바 토글 (데스크톱 전용)
 function toggleSidebar() {
+    // 모바일에서는 사이드바 대신 탭을 사용
+    if (window.innerWidth <= 768) {
+        switchTab('saved');
+        return;
+    }
+    
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
     

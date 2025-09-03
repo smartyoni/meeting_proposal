@@ -71,8 +71,19 @@
 
         <!-- 모바일 탭 네비게이션 -->
         <div class="mobile-tabs">
-            <button class="tab-btn active" onclick="switchTab('input')">📝 정보 입력</button>
-            <button class="tab-btn" onclick="switchTab('preview')">📄 생성된 매물 제안서</button>
+            <button class="tab-btn" onclick="switchTab('saved')">📋 목록</button>
+            <button class="tab-btn active" onclick="switchTab('input')">📝 입력</button>
+            <button class="tab-btn" onclick="switchTab('preview')">📄 미리보기</button>
+        </div>
+
+        <!-- 모바일 저장된 제안서 섹션 -->
+        <div class="mobile-saved-section" id="mobile-saved-section">
+            <div class="mobile-saved-header">
+                <h2>📋 저장된 제안서 목록</h2>
+            </div>
+            <div class="mobile-saved-list" id="mobileSavedProposalsList">
+                <!-- 모바일용 저장된 제안서 목록이 여기에 표시됨 -->
+            </div>
         </div>
 
         <!-- 데스크톱 레이아웃 -->
@@ -110,7 +121,7 @@
                         <div class="button-group">
                             <button type="button" class="btn-add" onclick="addProperty()">+ 매물 추가</button>
                             <button type="button" class="btn-save" onclick="saveProposal()">💾 저장</button>
-                            <button type="button" class="btn-reset" onclick="resetAllFields()">🔄 전체 초기화</button>
+                            <button type="button" class="btn-reset" onclick="resetAllFields()">🔄 입력 초기화</button>
                         </div>
                     </div>
 
