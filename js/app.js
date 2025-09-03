@@ -44,7 +44,7 @@ class ProposalApp {
             ${this.propertyCount > CONFIG.app.defaultPropertyCount ? '<button type="button" class="btn-remove" onclick="removeProperty(' + this.propertyCount + ')">×</button>' : ''}
             <textarea 
                 id="property-${this.propertyCount}" 
-                placeholder="매물 정보를 입력하세요.&#10;&#10;예시:&#10;✅ 매물 정보&#10;➡️태승훼미리 3차 (방화동)&#10;➡️전세: 전세 5억 원&#10;➡️정 보: 84.61㎡ (~25.6평) / 방 3개, 욕실 2개&#10;➡️특 징: 남향, 1동, 14/14층&#10;➡️공개비고: 주인거주,기본.&#10;➡️문 의: 강서태인공인중개사사무소 (02-2666-0099)"
+                placeholder="매물 정보를 입력하세요."
                 onchange="updatePreview()"
                 oninput="autoSave()"
             ></textarea>
