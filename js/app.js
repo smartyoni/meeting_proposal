@@ -1,0 +1,372 @@
+// 메인 애플리케이션 로직
+class ProposalApp {
+    constructor() {
+        this.propertyCount = 0;
+        this.currentTab = 'input'; // 현재 활성 탭 (모바일용)
+        this.init();
+    }
+
+    // 앱 초기화
+    init() {
+        this.createInitialProperties();
+        this.loadSavedData();
+        this.setupEventListeners();
+        this.updatePreview();
+        console.log('매물 제안서 앱 초기화 완료');
+    }
+
+    // 초기 매물 입력 폼 생성 (기본 3개)
+    createInitialProperties() {
+        const container = document.getElementById('propertyContainer');
+        container.innerHTML = '';
+        
+        for (let i = 0; i < CONFIG.app.defaultPropertyCount; i++) {
+            this.addProperty();
+        }
+    }
+
+    // 매물 추가
+    addProperty() {
+        if (this.propertyCount >= CONFIG.app.maxPropertyCount) {
+            alert(`최대 ${CONFIG.app.maxPropertyCount}개까지만 추가할 수 있습니다.`);
+            return;
+        }
+
+        this.propertyCount++;
+        const container = document.getElementById('propertyContainer');
+        
+        const propertyDiv = document.createElement('div');
+        propertyDiv.className = 'property-item fade-in';
+        propertyDiv.setAttribute('data-property-id', this.propertyCount);
+        
+        propertyDiv.innerHTML = `
+            <h4>🏠 매물 ${this.propertyCount}</h4>
+            ${this.propertyCount > CONFIG.app.defaultPropertyCount ? '<button type="button" class="btn-remove" onclick="removeProperty(' + this.propertyCount + ')">×</button>' : ''}
+            <textarea 
+                id="property-${this.propertyCount}" 
+                placeholder="매물 정보를 입력하세요.&#10;&#10;예시:&#10;✅ 매물 정보&#10;➡️태승훼미리 3차 (방화동)&#10;➡️전세: 전세 5억 원&#10;➡️정 보: 84.61㎡ (~25.6평) / 방 3개, 욕실 2개&#10;➡️특 징: 남향, 1동, 14/14층&#10;➡️공개비고: 주인거주,기본.&#10;➡️문 의: 강서태인공인중개사사무소 (02-2666-0099)"
+                onchange="updatePreview()"
+                oninput="autoSave()"
+            ></textarea>
+        `;
+        
+        container.appendChild(propertyDiv);
+        
+        // 스크롤을 새로 추가된 매물로 이동
+        propertyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        this.updatePreview();
+    }
+
+    // 매물 제거
+    removeProperty(propertyId) {
+        const propertyElement = document.querySelector(`[data-property-id="${propertyId}"]`);
+        if (propertyElement) {
+            propertyElement.remove();
+            this.updatePreview();
+            this.autoSave();
+        }
+    }
+
+    // 미리보기 업데이트
+    updatePreview() {
+        this.updateCustomerInfo();
+        this.updateProperties();
+    }
+
+    // 고객 정보 미리보기 업데이트
+    updateCustomerInfo() {
+        const customerName = document.getElementById('customerName').value || '고객명';
+        const meetingDate = document.getElementById('meetingDate').value || '날짜 미입력';
+        const requirements = document.getElementById('customerRequirements').value || '고객 희망 조건이 여기에 표시됩니다.';
+
+        document.getElementById('preview-customerName').textContent = customerName;
+        document.getElementById('preview-meetingDate').textContent = meetingDate;
+        document.getElementById('preview-requirements').textContent = requirements;
+    }
+
+    // 매물 정보 미리보기 업데이트
+    updateProperties() {
+        const container = document.getElementById('preview-properties');
+        const realtorContainer = document.getElementById('preview-realtor');
+        
+        container.innerHTML = '';
+        let realtorInfoSet = new Set(); // 중복 부동산 정보 방지
+        
+        // 모든 매물 정보 처리
+        const propertyElements = document.querySelectorAll('[id^="property-"]');
+        let propertyIndex = 1;
+        
+        propertyElements.forEach(textarea => {
+            const content = textarea.value.trim();
+            if (!content) return;
+            
+            const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+            if (lines.length < 2) return;
+            
+            // 매물 정보 파싱
+            const propertyInfo = this.parsePropertyInfo(lines);
+            
+            if (propertyInfo.title) {
+                // 매물 미리보기 생성
+                const propertyDiv = document.createElement('div');
+                propertyDiv.className = 'property-preview';
+                
+                propertyDiv.innerHTML = `
+                    <h3>${propertyIndex}. ${propertyInfo.title}</h3>
+                    <div class="property-details">${propertyInfo.details}</div>
+                `;
+                
+                container.appendChild(propertyDiv);
+                propertyIndex++;
+                
+                // 부동산 정보 수집
+                if (propertyInfo.realtorInfo) {
+                    realtorInfoSet.add(propertyInfo.realtorInfo);
+                }
+            }
+        });
+        
+        // 부동산 정보 표시
+        if (realtorInfoSet.size > 0) {
+            realtorContainer.innerHTML = Array.from(realtorInfoSet).join('<br>');
+        } else {
+            realtorContainer.innerHTML = '부동산 정보가 여기에 표시됩니다.';
+        }
+    }
+
+    // 매물 정보 파싱
+    parsePropertyInfo(lines) {
+        if (lines.length < 2) return { title: '', details: '', realtorInfo: '' };
+        
+        // 첫 번째 줄은 헤더로 건너뛰고, 두 번째 줄을 제목으로 사용
+        const title = lines[1].replace(/^➡️/, '').trim();
+        
+        // 마지막 줄을 부동산 정보로 분리
+        const lastLine = lines[lines.length - 1];
+        let realtorInfo = '';
+        let detailLines = lines.slice(2); // 3번째 줄부터
+        
+        // 마지막 줄이 연락처 정보인지 확인 (전화번호나 사무소명 포함)
+        if (lastLine.includes('중개사') || lastLine.includes('공인') || lastLine.match(/\d{2,3}-\d{3,4}-\d{4}/)) {
+            realtorInfo = lastLine.replace(/^➡️문\s*의\s*:\s*/, '').trim();
+            detailLines = lines.slice(2, -1); // 마지막 줄 제외
+        }
+        
+        // 상세 정보 조립
+        const details = detailLines.map(line => line.replace(/^➡️/, '')).join('\n');
+        
+        return {
+            title,
+            details,
+            realtorInfo
+        };
+    }
+
+    // 자동 저장
+    autoSave() {
+        if (!CONFIG.app.storage.autoSave) return;
+        
+        try {
+            const customerData = {
+                name: document.getElementById('customerName').value,
+                meetingDate: document.getElementById('meetingDate').value,
+                requirements: document.getElementById('customerRequirements').value
+            };
+            
+            const propertyData = [];
+            document.querySelectorAll('[id^="property-"]').forEach(textarea => {
+                if (textarea.value.trim()) {
+                    propertyData.push(textarea.value);
+                }
+            });
+            
+            firebaseManager.saveToLocalStorage({ customer: customerData, properties: propertyData });
+        } catch (error) {
+            console.error('자동 저장 실패:', error);
+        }
+    }
+
+    // 저장된 데이터 불러오기
+    loadSavedData() {
+        try {
+            const savedData = firebaseManager.loadFromLocalStorage();
+            
+            if (savedData.customer) {
+                const { name, meetingDate, requirements } = savedData.customer;
+                if (name) document.getElementById('customerName').value = name;
+                if (meetingDate) document.getElementById('meetingDate').value = meetingDate;
+                if (requirements) document.getElementById('customerRequirements').value = requirements;
+            }
+            
+            if (savedData.properties && savedData.properties.length > 0) {
+                // 기존 매물 폼 제거
+                document.getElementById('propertyContainer').innerHTML = '';
+                this.propertyCount = 0;
+                
+                // 저장된 매물 데이터로 폼 재생성
+                savedData.properties.forEach(propertyText => {
+                    this.addProperty();
+                    const lastPropertyTextarea = document.querySelector(`#property-${this.propertyCount}`);
+                    if (lastPropertyTextarea) {
+                        lastPropertyTextarea.value = propertyText;
+                    }
+                });
+            }
+            
+            console.log('저장된 데이터 불러오기 완료');
+        } catch (error) {
+            console.error('데이터 불러오기 실패:', error);
+        }
+    }
+
+    // 이벤트 리스너 설정
+    setupEventListeners() {
+        // 모바일 탭 전환 이벤트는 전역 함수로 처리됨
+        
+        // 폼 입력 이벤트
+        ['customerName', 'meetingDate', 'customerRequirements'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', () => {
+                    this.updatePreview();
+                    this.autoSave();
+                });
+            }
+        });
+
+        // 페이지 언로드 시 자동 저장
+        window.addEventListener('beforeunload', () => {
+            this.autoSave();
+        });
+
+        // 주기적 자동 저장 (30초마다)
+        setInterval(() => {
+            this.autoSave();
+        }, 30000);
+    }
+
+    // JPEG 다운로드
+    async downloadAsJPEG() {
+        const reportElement = document.getElementById('report-container');
+        
+        try {
+            // 다운로드 중 표시
+            const downloadBtn = document.querySelector('.btn-download');
+            const originalText = downloadBtn.textContent;
+            downloadBtn.textContent = '📥 생성 중...';
+            downloadBtn.disabled = true;
+            
+            // HTML2Canvas로 이미지 생성
+            const canvas = await html2canvas(reportElement, {
+                scale: 2, // 고해상도
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+            
+            // JPEG 변환 및 다운로드
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                
+                // 파일명 생성
+                const customerName = document.getElementById('customerName').value || '고객';
+                const today = new Date().toISOString().split('T')[0];
+                const filename = `${CONFIG.app.download.filename}_${customerName}_${today}.jpg`;
+                
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                // 버튼 상태 복원
+                downloadBtn.textContent = originalText;
+                downloadBtn.disabled = false;
+                
+                // Firebase Storage에 업로드 (활성화된 경우)
+                if (CONFIG.firebase.enabled) {
+                    firebaseManager.uploadImage(blob, filename);
+                }
+                
+                console.log('JPEG 다운로드 완료:', filename);
+                
+            }, 'image/jpeg', CONFIG.app.download.quality);
+            
+        } catch (error) {
+            console.error('다운로드 실패:', error);
+            alert('다운로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            
+            // 버튼 상태 복원
+            const downloadBtn = document.querySelector('.btn-download');
+            downloadBtn.textContent = '📥 JPEG로 다운로드';
+            downloadBtn.disabled = false;
+        }
+    }
+}
+
+// 전역 함수들 (HTML에서 직접 호출)
+let app;
+
+// 앱 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    app = new ProposalApp();
+});
+
+// 탭 전환 (모바일)
+function switchTab(tab) {
+    const inputSection = document.getElementById('input-section');
+    const previewSection = document.getElementById('preview-section');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    // 탭 버튼 상태 업데이트
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+    
+    // 섹션 표시/숨김
+    if (tab === 'input') {
+        inputSection.classList.add('active');
+        previewSection.classList.remove('active');
+    } else {
+        inputSection.classList.remove('active');
+        previewSection.classList.add('active');
+        // 미리보기 탭으로 전환 시 미리보기 업데이트
+        if (app) {
+            app.updatePreview();
+        }
+    }
+    
+    if (app) {
+        app.currentTab = tab;
+    }
+}
+
+// 매물 추가
+function addProperty() {
+    if (app) {
+        app.addProperty();
+    }
+}
+
+// 매물 제거
+function removeProperty(propertyId) {
+    if (app) {
+        app.removeProperty(propertyId);
+    }
+}
+
+// 미리보기 업데이트
+function updatePreview() {
+    if (app) {
+        app.updatePreview();
+    }
+}
+
+// JPEG 다운로드
+function downloadAsImage() {
+    if (app) {
+        app.downloadAsJPEG();
+    }
+}

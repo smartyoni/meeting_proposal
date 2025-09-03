@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미팅 매물 제안서 생성기</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 모바일 탭 네비게이션 -->
+        <div class="mobile-tabs">
+            <button class="tab-btn active" onclick="switchTab('input')">📝 입력</button>
+            <button class="tab-btn" onclick="switchTab('preview')">📄 보고서</button>
+        </div>
+
+        <!-- 데스크톱 레이아웃 -->
+        <div class="desktop-layout">
+            <!-- 좌측 입력 폼 -->
+            <div class="input-section" id="input-section">
+                <div class="form-container">
+                    <h2>📋 매물 제안서 입력</h2>
+                    
+                    <!-- 고객 정보 -->
+                    <div class="section">
+                        <h3>👤 고객 정보</h3>
+                        <div class="form-group">
+                            <label for="customerName">고객명</label>
+                            <input type="text" id="customerName" placeholder="고객명을 입력하세요" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label for="meetingDate">미팅 예정일</label>
+                            <input type="date" id="meetingDate" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerRequirements">고객 희망 조건</label>
+                            <textarea id="customerRequirements" rows="3" placeholder="고객의 희망 조건을 입력하세요" onchange="updatePreview()"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 매물 정보 -->
+                    <div class="section">
+                        <h3>🏠 매물 정보</h3>
+                        <div id="propertyContainer">
+                            <!-- 기본 3개 매물 입력 폼이 여기에 동적으로 생성됨 -->
+                        </div>
+                        <button type="button" class="btn-add" onclick="addProperty()">+ 매물 추가</button>
+                    </div>
+
+                    <!-- 다운로드 버튼 -->
+                    <div class="section">
+                        <button type="button" class="btn-download" onclick="downloadAsImage()">📥 JPEG로 다운로드</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 우측 미리보기 -->
+            <div class="preview-section" id="preview-section">
+                <div class="report-container" id="report-container">
+                    <div class="report-header">
+                        <h1>미팅 매물 제안서</h1>
+                        <div class="customer-info">
+                            <p><strong><span id="preview-customerName">고객명</span> 고객님</strong></p>
+                            <p>미팅 예정일: <span id="preview-meetingDate">날짜 미입력</span></p>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h2>🎯 고객 희망 조건</h2>
+                        <div id="preview-requirements" class="content-box">
+                            고객 희망 조건이 여기에 표시됩니다.
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h2>🏘️ 매물 정보</h2>
+                        <div id="preview-properties">
+                            <!-- 매물 정보가 여기에 동적으로 표시됨 -->
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h2>📞 부동산 정보</h2>
+                        <div id="preview-realtor" class="content-box">
+                            부동산 정보가 여기에 표시됩니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
