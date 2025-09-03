@@ -30,13 +30,15 @@
                     <!-- 고객 정보 -->
                     <div class="section">
                         <h3>✅ 고객 및 제안 정보</h3>
-                        <div class="form-group">
-                            <label for="customerName">고객명</label>
-                            <input type="text" id="customerName" placeholder="고객명을 입력하세요" onchange="updatePreview()">
-                        </div>
-                        <div class="form-group">
-                            <label for="meetingDate">미팅 예정일</label>
-                            <input type="date" id="meetingDate" onchange="updatePreview()">
+                        <div class="form-row">
+                            <div class="form-group inline">
+                                <label for="customerName">고객명:</label>
+                                <input type="text" id="customerName" placeholder="고객명을 입력하세요" onchange="updatePreview()">
+                            </div>
+                            <div class="form-group inline">
+                                <label for="meetingDate">미팅예정일:</label>
+                                <input type="date" id="meetingDate" onchange="updatePreview()">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="customerRequirements">고객 희망 조건</label>
