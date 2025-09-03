@@ -13,6 +13,7 @@ class ProposalApp {
         this.loadSavedData();
         this.setupEventListeners();
         this.updatePreview();
+        this.updateSavedProposalsList();
         console.log('매물 제안서 앱 초기화 완료');
     }
 
@@ -502,6 +503,171 @@ class ProposalApp {
         console.log('🌐 브라우저 모드로 실행 중');
         return false;
     }
+
+    // 제안서 저장
+    saveProposal() {
+        const customerName = document.getElementById('customerName').value;
+        const meetingDate = document.getElementById('meetingDate').value;
+        
+        if (!customerName) {
+            alert('고객명을 입력해주세요.');
+            return;
+        }
+
+        const proposalData = {
+            id: Date.now(),
+            customerName: customerName,
+            meetingDate: meetingDate,
+            customerRequirements: document.getElementById('customerRequirements').value,
+            properties: this.collectPropertiesData(),
+            savedAt: new Date().toLocaleString('ko-KR')
+        };
+
+        const savedProposals = this.getSavedProposals();
+        savedProposals.unshift(proposalData);
+        
+        // 최대 50개까지만 저장
+        if (savedProposals.length > 50) {
+            savedProposals.splice(50);
+        }
+
+        localStorage.setItem('savedProposals', JSON.stringify(savedProposals));
+        
+        this.updateSavedProposalsList();
+        alert(`"${customerName}" 고객님의 제안서가 저장되었습니다.`);
+    }
+
+    // 저장된 제안서 목록 가져오기
+    getSavedProposals() {
+        try {
+            const saved = localStorage.getItem('savedProposals');
+            return saved ? JSON.parse(saved) : [];
+        } catch (error) {
+            console.error('저장된 제안서 불러오기 실패:', error);
+            return [];
+        }
+    }
+
+    // 매물 데이터 수집
+    collectPropertiesData() {
+        const properties = [];
+        const container = document.getElementById('propertyContainer');
+        const propertyForms = container.querySelectorAll('.property-form');
+        
+        propertyForms.forEach((form, index) => {
+            const propertyData = {
+                address: form.querySelector(`#address${index + 1}`)?.value || '',
+                type: form.querySelector(`#type${index + 1}`)?.value || '',
+                area: form.querySelector(`#area${index + 1}`)?.value || '',
+                price: form.querySelector(`#price${index + 1}`)?.value || '',
+                deposit: form.querySelector(`#deposit${index + 1}`)?.value || '',
+                monthlyRent: form.querySelector(`#monthlyRent${index + 1}`)?.value || '',
+                maintenanceFee: form.querySelector(`#maintenanceFee${index + 1}`)?.value || '',
+                realtorName: form.querySelector(`#realtorName${index + 1}`)?.value || '',
+                realtorPhone: form.querySelector(`#realtorPhone${index + 1}`)?.value || '',
+                realtorAddress: form.querySelector(`#realtorAddress${index + 1}`)?.value || ''
+            };
+            properties.push(propertyData);
+        });
+        
+        return properties;
+    }
+
+    // 제안서 불러오기
+    loadProposal(proposalId) {
+        const savedProposals = this.getSavedProposals();
+        const proposal = savedProposals.find(p => p.id === proposalId);
+        
+        if (!proposal) {
+            alert('제안서를 찾을 수 없습니다.');
+            return;
+        }
+
+        // 기본 정보 설정
+        document.getElementById('customerName').value = proposal.customerName || '';
+        document.getElementById('meetingDate').value = proposal.meetingDate || '';
+        document.getElementById('customerRequirements').value = proposal.customerRequirements || '';
+
+        // 기존 매물 폼 초기화
+        const container = document.getElementById('propertyContainer');
+        container.innerHTML = '';
+        this.propertyCount = 0;
+
+        // 저장된 매물 데이터로 폼 생성
+        if (proposal.properties && proposal.properties.length > 0) {
+            proposal.properties.forEach((property, index) => {
+                this.addProperty();
+                const form = container.querySelector(`.property-form:nth-child(${index + 1})`);
+                
+                form.querySelector(`#address${index + 1}`).value = property.address || '';
+                form.querySelector(`#type${index + 1}`).value = property.type || '';
+                form.querySelector(`#area${index + 1}`).value = property.area || '';
+                form.querySelector(`#price${index + 1}`).value = property.price || '';
+                form.querySelector(`#deposit${index + 1}`).value = property.deposit || '';
+                form.querySelector(`#monthlyRent${index + 1}`).value = property.monthlyRent || '';
+                form.querySelector(`#maintenanceFee${index + 1}`).value = property.maintenanceFee || '';
+                form.querySelector(`#realtorName${index + 1}`).value = property.realtorName || '';
+                form.querySelector(`#realtorPhone${index + 1}`).value = property.realtorPhone || '';
+                form.querySelector(`#realtorAddress${index + 1}`).value = property.realtorAddress || '';
+            });
+        } else {
+            // 저장된 매물이 없으면 기본 1개 생성
+            this.addProperty();
+        }
+
+        this.updatePreview();
+        alert(`"${proposal.customerName}" 고객님의 제안서가 불러와졌습니다.`);
+    }
+
+    // 제안서 삭제
+    deleteProposal(proposalId) {
+        const savedProposals = this.getSavedProposals();
+        const proposal = savedProposals.find(p => p.id === proposalId);
+        
+        if (!proposal) {
+            alert('제안서를 찾을 수 없습니다.');
+            return;
+        }
+
+        if (confirm(`"${proposal.customerName}" 고객님의 제안서를 삭제하시겠습니까?`)) {
+            const filteredProposals = savedProposals.filter(p => p.id !== proposalId);
+            localStorage.setItem('savedProposals', JSON.stringify(filteredProposals));
+            this.updateSavedProposalsList();
+            alert('제안서가 삭제되었습니다.');
+        }
+    }
+
+    // 저장된 제안서 목록 업데이트
+    updateSavedProposalsList() {
+        const listContainer = document.getElementById('savedProposalsList');
+        const savedProposals = this.getSavedProposals();
+        
+        if (savedProposals.length === 0) {
+            listContainer.innerHTML = '<div class="empty-list">저장된 제안서가 없습니다.</div>';
+            return;
+        }
+
+        let html = '';
+        savedProposals.forEach(proposal => {
+            const shortDate = proposal.meetingDate ? 
+                new Date(proposal.meetingDate).toLocaleDateString('ko-KR') : '미지정';
+            
+            html += `
+                <div class="saved-proposal-item">
+                    <div class="proposal-info" onclick="app.loadProposal(${proposal.id})">
+                        <h4>${proposal.customerName || '이름 없음'}</h4>
+                        <p>미팅일시: ${shortDate} | 저장: ${proposal.savedAt}</p>
+                    </div>
+                    <div class="proposal-actions">
+                        <button class="btn-load" onclick="app.loadProposal(${proposal.id})">불러오기</button>
+                        <button class="btn-delete" onclick="app.deleteProposal(${proposal.id})">삭제</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        listContainer.innerHTML = html;
+    }
 }
 
 // 전역 함수들 (HTML에서 직접 호출)
@@ -592,4 +758,29 @@ function resetAllFields() {
 // 레거시 지원
 function downloadAsImage() {
     downloadAsJPG();
+}
+
+// 제안서 저장
+function saveProposal() {
+    if (app) {
+        app.saveProposal();
+    }
+}
+
+// 사이드바 토글
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+    } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        // 목록 업데이트
+        if (app) {
+            app.updateSavedProposalsList();
+        }
+    }
 }

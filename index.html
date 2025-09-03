@@ -50,11 +50,24 @@
 </head>
 <body>
     <div class="container">
-        <!-- 메인 타이틀 -->
-        <div class="main-title">
-            <div class="title-icon">🏠</div>
-            <h1>미팅 매물 제안서</h1>
+        <!-- 사이드바 토글 버튼 -->
+        <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+            📋 제안서 목록
+        </button>
+        
+        <!-- 저장된 제안서 사이드바 -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>📋 저장된 제안서</h3>
+                <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+            </div>
+            <div class="sidebar-content" id="savedProposalsList">
+                <!-- 저장된 제안서 목록이 여기에 동적으로 표시됨 -->
+            </div>
         </div>
+        
+        <!-- 사이드바 오버레이 -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
         <!-- 모바일 탭 네비게이션 -->
         <div class="mobile-tabs">
@@ -96,14 +109,12 @@
                         </div>
                         <div class="button-group">
                             <button type="button" class="btn-add" onclick="addProperty()">+ 매물 추가</button>
+                            <button type="button" class="btn-save" onclick="saveProposal()">💾 저장</button>
                             <button type="button" class="btn-reset" onclick="resetAllFields()">🔄 전체 초기화</button>
                         </div>
                     </div>
 
-                    <!-- 다운로드 버튼 -->
-                    <div class="section">
-                        <button type="button" class="btn-download" onclick="downloadAsImage()">📥 JPEG로 다운로드</button>
-                    </div>
+
                 </div>
             </div>
 

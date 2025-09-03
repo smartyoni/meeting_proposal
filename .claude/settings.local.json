@@ -14,7 +14,8 @@
       "Bash(node:*)",
       "Bash(del generate-icons.js)",
       "Bash(python:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
