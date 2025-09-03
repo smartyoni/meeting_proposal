@@ -352,6 +352,40 @@ class ProposalApp {
             downloadBtn.disabled = false;
         }
     }
+
+    // 전체 필드 초기화
+    resetAllFields() {
+        // 확인 대화상자
+        if (!confirm('모든 입력 내용을 초기화하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.')) {
+            return;
+        }
+
+        // 고객 정보 초기화
+        document.getElementById('customerName').value = '';
+        document.getElementById('meetingDate').value = '';
+        document.getElementById('customerRequirements').value = '';
+
+        // 매물 정보 초기화
+        document.getElementById('propertyContainer').innerHTML = '';
+        this.propertyCount = 0;
+
+        // 기본 3개 매물 다시 생성
+        this.createInitialProperties();
+
+        // 로컬 스토리지 초기화
+        localStorage.removeItem(CONFIG.app.storage.customerData);
+        localStorage.removeItem(CONFIG.app.storage.propertyData);
+
+        // 미리보기 업데이트
+        this.updatePreview();
+
+        console.log('모든 필드가 초기화되었습니다.');
+        
+        // 성공 메시지 표시 (선택사항)
+        setTimeout(() => {
+            alert('✅ 모든 내용이 초기화되었습니다.');
+        }, 100);
+    }
 }
 
 // 전역 함수들 (HTML에서 직접 호출)
@@ -429,6 +463,13 @@ function downloadAsPNG() {
 function downloadAsJPG() {
     if (app) {
         app.downloadAsJPG();
+    }
+}
+
+// 전체 초기화
+function resetAllFields() {
+    if (app) {
+        app.resetAllFields();
     }
 }
 

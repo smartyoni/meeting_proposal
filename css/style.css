@@ -186,20 +186,41 @@ body {
     transform: scale(1.1);
 }
 
-.btn-add {
-    background: #28a745;
-    color: white;
-    border: none;
+/* 버튼 그룹 컨테이너 */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-add, .btn-reset {
+    flex: 1;
     padding: 12px 24px;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: bold;
     transition: all 0.3s ease;
-    width: 100%;
+}
+
+.btn-add {
+    background: #28a745;
+    color: white;
 }
 
 .btn-add:hover {
     background: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-reset {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-reset:hover {
+    background: #5a6268;
     transform: translateY(-2px);
 }
 
