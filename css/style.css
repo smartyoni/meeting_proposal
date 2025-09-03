@@ -271,19 +271,24 @@ body {
 
 /* 다운로드 옵션 컨테이너 */
 .download-options {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+/* 다운로드 컨트롤 (토글 + 버튼들) */
+.download-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
 }
 
 /* 부동산 정보 토글 */
 .realtor-toggle {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    backdrop-filter: blur(10px);
 }
 
 .realtor-toggle input[type="checkbox"] {
@@ -300,13 +305,13 @@ body {
     color: #2c3e50;
     cursor: pointer;
     user-select: none;
+    white-space: nowrap;
 }
 
 /* 다운로드 버튼들 */
 .download-buttons {
     display: flex;
-    gap: 10px;
-    justify-content: flex-end;
+    gap: 8px;
 }
 
 .download-btn {
@@ -493,6 +498,21 @@ body {
         margin-bottom: 8px;
         margin-right: 0;
         min-width: auto;
+    }
+    
+    /* 모바일에서 다운로드 컨트롤을 세로로 배치 */
+    .download-controls {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .realtor-toggle {
+        justify-content: center;
+    }
+    
+    .download-buttons {
+        justify-content: center;
     }
     
     .desktop-layout {
