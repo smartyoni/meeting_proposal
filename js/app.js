@@ -4,6 +4,7 @@ class ProposalApp {
         this.propertyCount = 0;
         this.currentTab = 'input'; // 현재 활성 탭 (모바일용)
         this.init();
+        this.registerServiceWorker();
     }
 
     // 앱 초기화
@@ -414,6 +415,92 @@ class ProposalApp {
         setTimeout(() => {
             alert('✅ 모든 내용이 초기화되었습니다.');
         }, 100);
+    }
+
+    // Service Worker 등록
+    registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker 등록 성공:', registration.scope);
+                        
+                        // 업데이트 확인
+                        registration.addEventListener('updatefound', () => {
+                            console.log('🔄 새 버전 발견');
+                            const newWorker = registration.installing;
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // 새 버전 사용 가능 알림
+                                    this.showUpdateAvailable();
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker 등록 실패:', error);
+                    });
+
+                // 앱 설치 프롬프트 처리
+                this.setupInstallPrompt();
+            });
+        } else {
+            console.log('❌ Service Worker를 지원하지 않는 브라우저입니다.');
+        }
+    }
+
+    // 앱 설치 프롬프트 설정
+    setupInstallPrompt() {
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('💾 앱 설치 프롬프트 준비됨');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 설치 버튼 표시 (필요시)
+            this.showInstallButton(deferredPrompt);
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 PWA 앱이 설치되었습니다!');
+            deferredPrompt = null;
+            
+            // 설치 완료 메시지
+            setTimeout(() => {
+                alert('🏠 매물 제안서 앱이 홈 화면에 설치되었습니다!');
+            }, 1000);
+        });
+    }
+
+    // 업데이트 알림 표시
+    showUpdateAvailable() {
+        if (confirm('🔄 새 버전이 사용 가능합니다.\n지금 업데이트하시겠습니까?')) {
+            window.location.reload();
+        }
+    }
+
+    // 설치 버튼 표시 (옵션)
+    showInstallButton(prompt) {
+        // 간단한 설치 안내 (필요시 UI에 버튼 추가 가능)
+        console.log('📱 홈 화면에 앱을 추가할 수 있습니다.');
+        
+        // 자동으로 설치 프롬프트 표시 (옵션)
+        // prompt.prompt();
+    }
+
+    // PWA 설치 상태 확인
+    checkInstallStatus() {
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('📱 PWA 모드로 실행 중');
+            return true;
+        } else if (window.navigator.standalone === true) {
+            console.log('🍎 iOS 홈 화면에서 실행 중');
+            return true;
+        }
+        console.log('🌐 브라우저 모드로 실행 중');
+        return false;
     }
 }
 
