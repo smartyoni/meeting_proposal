@@ -8,10 +8,16 @@
 </head>
 <body>
     <div class="container">
+        <!-- 메인 타이틀 -->
+        <div class="main-title">
+            <div class="title-icon">🏠</div>
+            <h1>미팅 매물 제안서</h1>
+        </div>
+
         <!-- 모바일 탭 네비게이션 -->
         <div class="mobile-tabs">
-            <button class="tab-btn active" onclick="switchTab('input')">📝 입력</button>
-            <button class="tab-btn" onclick="switchTab('preview')">📄 보고서</button>
+            <button class="tab-btn active" onclick="switchTab('input')">📝 정보 입력</button>
+            <button class="tab-btn" onclick="switchTab('preview')">📄 생성된 매물 제안서</button>
         </div>
 
         <!-- 데스크톱 레이아웃 -->
@@ -23,7 +29,7 @@
                     
                     <!-- 고객 정보 -->
                     <div class="section">
-                        <h3>👤 고객 정보</h3>
+                        <h3>✅ 고객 및 제안 정보</h3>
                         <div class="form-group">
                             <label for="customerName">고객명</label>
                             <input type="text" id="customerName" placeholder="고객명을 입력하세요" onchange="updatePreview()">
@@ -40,7 +46,7 @@
 
                     <!-- 매물 정보 -->
                     <div class="section">
-                        <h3>🏠 매물 정보</h3>
+                        <h3>✅ 매물 정보 (기본 3개, 최대 7개)</h3>
                         <div id="propertyContainer">
                             <!-- 기본 3개 매물 입력 폼이 여기에 동적으로 생성됨 -->
                         </div>
@@ -56,19 +62,28 @@
 
             <!-- 우측 미리보기 -->
             <div class="preview-section" id="preview-section">
+                <!-- 다운로드 버튼들 -->
+                <div class="download-buttons">
+                    <button class="download-btn pdf-btn" onclick="downloadAsPDF()">📄 PDF</button>
+                    <button class="download-btn png-btn" onclick="downloadAsPNG()">🖼️ PNG</button>
+                    <button class="download-btn jpg-btn" onclick="downloadAsJPG()">📷 JPG</button>
+                </div>
+                
                 <div class="report-container" id="report-container">
                     <div class="report-header">
-                        <h1>미팅 매물 제안서</h1>
-                        <div class="customer-info">
-                            <p><strong><span id="preview-customerName">고객명</span> 고객님</strong></p>
-                            <p>미팅 예정일: <span id="preview-meetingDate">날짜 미입력</span></p>
+                        <div class="header-content">
+                            <h1>미팅 매물 제안서</h1>
+                            <div class="customer-info">
+                                <p><span id="preview-customerName">신호부부</span> 고객님께</p>
+                                <p>미팅 예정일: <span id="preview-meetingDate">2025. 9. 4.</span></p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="report-section">
-                        <h2>🎯 고객 희망 조건</h2>
-                        <div id="preview-requirements" class="content-box">
-                            고객 희망 조건이 여기에 표시됩니다.
+                        <h2>✅ 고객 희망조건</h2>
+                        <div id="preview-requirements" class="requirements-box">
+                            전용 20평이상 시세위압용
                         </div>
                     </div>
 

@@ -6,7 +6,8 @@
       "Bash(git add:*)",
       "Bash(git branch:*)",
       "Bash(git push:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh repo view:*)"
     ],
     "deny": [],
     "ask": []

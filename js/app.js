@@ -153,14 +153,35 @@ class ProposalApp {
             detailLines = lines.slice(2, -1); // 마지막 줄 제외
         }
         
-        // 상세 정보 조립
-        const details = detailLines.map(line => line.replace(/^➡️/, '')).join('\n');
+        // 상세 정보를 체크박스 스타일로 변환
+        const details = this.formatDetailsWithIcons(detailLines);
         
         return {
             title,
             details,
             realtorInfo
         };
+    }
+
+    // 매물 상세 정보를 아이콘과 함께 포맷팅
+    formatDetailsWithIcons(detailLines) {
+        return detailLines.map(line => {
+            const cleanLine = line.replace(/^➡️/, '').trim();
+            let className = 'detail-item';
+            
+            // 항목별로 다른 아이콘 적용
+            if (cleanLine.includes('전세:') || cleanLine.includes('매매:') || cleanLine.includes('월세:')) {
+                className += ' price';
+            } else if (cleanLine.includes('정 보:') || cleanLine.includes('면적:')) {
+                className += ' info';
+            } else if (cleanLine.includes('특 징:') || cleanLine.includes('향:')) {
+                className += ' feature';
+            } else if (cleanLine.includes('공개비고:') || cleanLine.includes('비고:')) {
+                className += ' note';
+            }
+            
+            return `<div class="${className}">${cleanLine}</div>`;
+        }).join('');
     }
 
     // 자동 저장
@@ -246,15 +267,30 @@ class ProposalApp {
         }, 30000);
     }
 
+    // PDF 다운로드
+    async downloadAsPDF() {
+        await this.downloadImage('pdf');
+    }
+
+    // PNG 다운로드
+    async downloadAsPNG() {
+        await this.downloadImage('png');
+    }
+
     // JPEG 다운로드
-    async downloadAsJPEG() {
+    async downloadAsJPG() {
+        await this.downloadImage('jpg');
+    }
+
+    // 통합 이미지 다운로드 함수
+    async downloadImage(format) {
         const reportElement = document.getElementById('report-container');
         
         try {
             // 다운로드 중 표시
-            const downloadBtn = document.querySelector('.btn-download');
+            const downloadBtn = document.querySelector(`.${format}-btn`);
             const originalText = downloadBtn.textContent;
-            downloadBtn.textContent = '📥 생성 중...';
+            downloadBtn.textContent = '생성 중...';
             downloadBtn.disabled = true;
             
             // HTML2Canvas로 이미지 생성
@@ -265,15 +301,26 @@ class ProposalApp {
                 backgroundColor: '#ffffff'
             });
             
-            // JPEG 변환 및 다운로드
+            // 파일명 생성
+            const customerName = document.getElementById('customerName').value || '고객';
+            const today = new Date().toISOString().split('T')[0];
+            const filename = `${CONFIG.app.download.filename}_${customerName}_${today}.${format}`;
+            
+            if (format === 'pdf') {
+                // PDF 생성 (jsPDF 필요 - 나중에 구현)
+                alert('PDF 다운로드는 준비 중입니다. JPG 또는 PNG를 이용해주세요.');
+                downloadBtn.textContent = originalText;
+                downloadBtn.disabled = false;
+                return;
+            }
+            
+            // 이미지 형식에 따른 변환
+            const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+            const quality = format === 'jpg' ? CONFIG.app.download.quality : 1.0;
+            
             canvas.toBlob((blob) => {
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
-                
-                // 파일명 생성
-                const customerName = document.getElementById('customerName').value || '고객';
-                const today = new Date().toISOString().split('T')[0];
-                const filename = `${CONFIG.app.download.filename}_${customerName}_${today}.jpg`;
                 
                 link.href = url;
                 link.download = filename;
@@ -291,17 +338,17 @@ class ProposalApp {
                     firebaseManager.uploadImage(blob, filename);
                 }
                 
-                console.log('JPEG 다운로드 완료:', filename);
+                console.log(`${format.toUpperCase()} 다운로드 완료:`, filename);
                 
-            }, 'image/jpeg', CONFIG.app.download.quality);
+            }, mimeType, quality);
             
         } catch (error) {
             console.error('다운로드 실패:', error);
             alert('다운로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
             
             // 버튼 상태 복원
-            const downloadBtn = document.querySelector('.btn-download');
-            downloadBtn.textContent = '📥 JPEG로 다운로드';
+            const downloadBtn = document.querySelector(`.${format}-btn`);
+            downloadBtn.textContent = downloadBtn.textContent.replace('생성 중...', originalText);
             downloadBtn.disabled = false;
         }
     }
@@ -364,9 +411,28 @@ function updatePreview() {
     }
 }
 
-// JPEG 다운로드
-function downloadAsImage() {
+// PDF 다운로드
+function downloadAsPDF() {
     if (app) {
-        app.downloadAsJPEG();
+        app.downloadAsPDF();
     }
+}
+
+// PNG 다운로드
+function downloadAsPNG() {
+    if (app) {
+        app.downloadAsPNG();
+    }
+}
+
+// JPG 다운로드
+function downloadAsJPG() {
+    if (app) {
+        app.downloadAsJPG();
+    }
+}
+
+// 레거시 지원
+function downloadAsImage() {
+    downloadAsJPG();
 }

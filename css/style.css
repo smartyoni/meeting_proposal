@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Malgun Gothic', sans-serif;
-    background-color: #f5f5f5;
+    background-color: #f8f9fa;
     color: #333;
     line-height: 1.6;
 }
@@ -16,6 +16,25 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
+}
+
+/* 메인 타이틀 */
+.main-title {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+}
+
+.title-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.main-title h1 {
+    font-size: 32px;
+    color: #2c3e50;
+    font-weight: bold;
+    margin: 0;
 }
 
 /* 모바일 탭 네비게이션 (기본 숨김) */
@@ -196,47 +215,105 @@ body {
     box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
 
+/* 다운로드 버튼들 */
+.download-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: flex-end;
+}
+
+.download-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.pdf-btn {
+    background: #dc3545;
+}
+
+.pdf-btn:hover {
+    background: #c82333;
+}
+
+.png-btn {
+    background: #007bff;
+}
+
+.png-btn:hover {
+    background: #0056b3;
+}
+
+.jpg-btn {
+    background: #28a745;
+}
+
+.jpg-btn:hover {
+    background: #218838;
+}
+
 /* 보고서 미리보기 스타일 */
 .report-container {
     background: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     min-height: 600px;
+    overflow: hidden;
 }
 
 .report-header {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 30px;
     text-align: center;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #007bff;
+    margin-bottom: 0;
+    border-bottom: none;
 }
 
-.report-header h1 {
+.header-content h1 {
     font-size: 28px;
-    color: #2c3e50;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    font-weight: bold;
 }
 
 .customer-info {
     font-size: 16px;
-    color: #555;
+    opacity: 0.95;
 }
 
 .customer-info p {
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
 .report-section {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    padding: 0 30px;
 }
 
 .report-section h2 {
-    font-size: 20px;
-    color: #34495e;
+    font-size: 18px;
+    color: #2c3e50;
     margin-bottom: 15px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #e1e8ed;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: bold;
+}
+
+.requirements-box {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #4CAF50;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #495057;
 }
 
 .content-box {
@@ -249,31 +326,59 @@ body {
 }
 
 .property-preview {
-    background: #f8f9fa;
+    background: white;
     border: 1px solid #e9ecef;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .property-preview h3 {
     color: #2c3e50;
     margin-bottom: 15px;
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.property-preview .property-details {
-    white-space: pre-wrap;
+.property-details {
     line-height: 1.8;
     margin-bottom: 15px;
 }
 
-.property-preview .realtor-info {
-    background: #e3f2fd;
-    padding: 10px;
-    border-radius: 4px;
+.property-details .detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
     font-size: 14px;
-    color: #1565c0;
+    color: #495057;
+}
+
+.property-details .detail-item::before {
+    content: "✅";
+    margin-right: 8px;
+    font-size: 12px;
+}
+
+.property-details .detail-item.info::before {
+    content: "🔵";
+}
+
+.property-details .detail-item.feature::before {
+    content: "🔵";
+}
+
+.property-details .detail-item.note::before {
+    content: "🔵";
+}
+
+.realtor-info {
+    background: #e8f5e8;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #2e7d32;
+    border-left: 4px solid #4CAF50;
 }
 
 /* 반응형 디자인 - 모바일 */
