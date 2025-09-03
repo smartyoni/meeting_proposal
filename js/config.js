@@ -15,7 +15,7 @@ const CONFIG = {
     app: {
         title: "미팅 매물 제안서",
         version: "1.0.0",
-        defaultPropertyCount: 3, // 기본 매물 개수
+        defaultPropertyCount: 1, // 기본 매물 개수
         maxPropertyCount: 10,    // 최대 매물 개수
         
         // 다운로드 설정

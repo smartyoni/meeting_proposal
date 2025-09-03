@@ -41,7 +41,7 @@ class ProposalApp {
         
         propertyDiv.innerHTML = `
             <h4>🏠 매물 ${this.propertyCount}</h4>
-            ${this.propertyCount > CONFIG.app.defaultPropertyCount ? '<button type="button" class="btn-remove" onclick="removeProperty(' + this.propertyCount + ')">×</button>' : ''}
+            ${this.propertyCount > 1 ? '<button type="button" class="btn-remove" onclick="removeProperty(' + this.propertyCount + ')">×</button>' : ''}
             <textarea 
                 id="property-${this.propertyCount}" 
                 placeholder="매물 정보를 입력하세요."
@@ -398,7 +398,7 @@ class ProposalApp {
         document.getElementById('propertyContainer').innerHTML = '';
         this.propertyCount = 0;
 
-        // 기본 3개 매물 다시 생성
+        // 기본 1개 매물 다시 생성
         this.createInitialProperties();
 
         // 로컬 스토리지 초기화
