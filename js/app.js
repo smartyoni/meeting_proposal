@@ -299,17 +299,22 @@ class ProposalApp {
     async downloadImage(format) {
         const reportElement = document.getElementById('report-container');
         
+        // 부동산 정보 포함 여부 확인
+        const includeRealtorInfo = document.getElementById('includeRealtorInfo').checked;
+        const realtorSection = document.getElementById('preview-realtor').parentElement;
+        const originalDisplay = realtorSection.style.display;
+        
         try {
             // 다운로드 중 표시
             const downloadBtn = document.querySelector(`.${format}-btn`);
             const originalText = downloadBtn.textContent;
             downloadBtn.textContent = '생성 중...';
             downloadBtn.disabled = true;
-
-            // 부동산 정보 섹션 임시 숨김
-            const realtorSection = document.getElementById('preview-realtor').parentElement;
-            const originalDisplay = realtorSection.style.display;
-            realtorSection.style.display = 'none';
+            
+            // 부동산 정보 포함하지 않는 경우 임시 숨김
+            if (!includeRealtorInfo) {
+                realtorSection.style.display = 'none';
+            }
             
             // HTML2Canvas로 이미지 생성
             const canvas = await html2canvas(reportElement, {
@@ -369,9 +374,11 @@ class ProposalApp {
             downloadBtn.textContent = downloadBtn.textContent.replace('생성 중...', originalText);
             downloadBtn.disabled = false;
         } finally {
-            // 부동산 정보 섹션 다시 표시
+            // 부동산 정보 섹션 원래 상태로 복원
             const realtorSection = document.getElementById('preview-realtor').parentElement;
-            realtorSection.style.display = originalDisplay || 'block';
+            if (!includeRealtorInfo) {
+                realtorSection.style.display = originalDisplay || 'block';
+            }
         }
     }
 

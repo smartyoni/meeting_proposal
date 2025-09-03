@@ -67,11 +67,18 @@
 
             <!-- 우측 미리보기 -->
             <div class="preview-section" id="preview-section">
-                <!-- 다운로드 버튼들 -->
-                <div class="download-buttons">
-                    <button class="download-btn pdf-btn" onclick="downloadAsPDF()">📄 PDF</button>
-                    <button class="download-btn png-btn" onclick="downloadAsPNG()">🖼️ PNG</button>
-                    <button class="download-btn jpg-btn" onclick="downloadAsJPG()">📷 JPG</button>
+                <!-- 다운로드 옵션 -->
+                <div class="download-options">
+                    <div class="realtor-toggle">
+                        <input type="checkbox" id="includeRealtorInfo" checked>
+                        <label for="includeRealtorInfo">📞 부동산 정보 포함</label>
+                    </div>
+                    <!-- 다운로드 버튼들 -->
+                    <div class="download-buttons">
+                        <button class="download-btn pdf-btn" onclick="downloadAsPDF()">📄 PDF</button>
+                        <button class="download-btn png-btn" onclick="downloadAsPNG()">🖼️ PNG</button>
+                        <button class="download-btn jpg-btn" onclick="downloadAsJPG()">📷 JPG</button>
+                    </div>
                 </div>
                 
                 <div class="report-container" id="report-container">
