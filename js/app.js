@@ -101,10 +101,8 @@ class ProposalApp {
     // 매물 정보 미리보기 업데이트
     updateProperties() {
         const container = document.getElementById('preview-properties');
-        const realtorContainer = document.getElementById('preview-realtor');
         
         container.innerHTML = '';
-        let realtorInfoSet = new Set(); // 중복 부동산 정보 방지
         
         // 모든 매물 정보 처리
         const propertyElements = document.querySelectorAll('[id^="property-"]');
@@ -125,27 +123,25 @@ class ProposalApp {
                 const propertyDiv = document.createElement('div');
                 propertyDiv.className = 'property-preview';
                 
-                propertyDiv.innerHTML = `
+                let propertyHtml = `
                     <h3>${propertyIndex}. ${propertyInfo.title}</h3>
                     <div class="property-details">${propertyInfo.details}</div>
                 `;
                 
+                // 부동산 정보가 있으면 매물 아래에 바로 표시
+                if (propertyInfo.realtorInfo) {
+                    propertyHtml += `
+                        <div class="realtor-info property-realtor-info">
+                            <strong>📞 문의:</strong> ${propertyInfo.realtorInfo}
+                        </div>
+                    `;
+                }
+                
+                propertyDiv.innerHTML = propertyHtml;
                 container.appendChild(propertyDiv);
                 propertyIndex++;
-                
-                // 부동산 정보 수집
-                if (propertyInfo.realtorInfo) {
-                    realtorInfoSet.add(propertyInfo.realtorInfo);
-                }
             }
         });
-        
-        // 부동산 정보 표시
-        if (realtorInfoSet.size > 0) {
-            realtorContainer.innerHTML = Array.from(realtorInfoSet).join('<br>');
-        } else {
-            realtorContainer.innerHTML = '부동산 정보가 여기에 표시됩니다.';
-        }
     }
 
     // 매물 정보 파싱
@@ -301,8 +297,8 @@ class ProposalApp {
         
         // 부동산 정보 포함 여부 확인
         const includeRealtorInfo = document.getElementById('includeRealtorInfo').checked;
-        const realtorSection = document.getElementById('preview-realtor').parentElement;
-        const originalDisplay = realtorSection.style.display;
+        const propertyRealtorInfoElements = document.querySelectorAll('.property-realtor-info');
+        const originalDisplays = [];
         
         try {
             // 다운로드 중 표시
@@ -311,9 +307,12 @@ class ProposalApp {
             downloadBtn.textContent = '생성 중...';
             downloadBtn.disabled = true;
             
-            // 부동산 정보 포함하지 않는 경우 임시 숨김
+            // 부동산 정보 포함하지 않는 경우 각 매물별 부동산 정보 임시 숨김
             if (!includeRealtorInfo) {
-                realtorSection.style.display = 'none';
+                propertyRealtorInfoElements.forEach((element, index) => {
+                    originalDisplays[index] = element.style.display;
+                    element.style.display = 'none';
+                });
             }
             
             // HTML2Canvas로 이미지 생성
@@ -374,10 +373,11 @@ class ProposalApp {
             downloadBtn.textContent = downloadBtn.textContent.replace('생성 중...', originalText);
             downloadBtn.disabled = false;
         } finally {
-            // 부동산 정보 섹션 원래 상태로 복원
-            const realtorSection = document.getElementById('preview-realtor').parentElement;
+            // 각 매물별 부동산 정보 원래 상태로 복원
             if (!includeRealtorInfo) {
-                realtorSection.style.display = originalDisplay || 'block';
+                propertyRealtorInfoElements.forEach((element, index) => {
+                    element.style.display = originalDisplays[index] || 'block';
+                });
             }
         }
     }
