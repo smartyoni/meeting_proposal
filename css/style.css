@@ -153,7 +153,14 @@ body {
 
 .property-item textarea {
     background: white;
-    min-height: 120px;
+    min-height: 180px;
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e1e8ed;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
 }
 
 .btn-remove {
