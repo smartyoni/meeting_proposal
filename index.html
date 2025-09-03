@@ -36,8 +36,8 @@
                                 <input type="text" id="customerName" placeholder="고객명을 입력하세요" onchange="updatePreview()">
                             </div>
                             <div class="form-group inline">
-                                <label for="meetingDate">미팅예정일:</label>
-                                <input type="date" id="meetingDate" onchange="updatePreview()">
+                                <label for="meetingDate">미팅일시:</label>
+                                <input type="datetime-local" id="meetingDate" onchange="updatePreview()">
                             </div>
                         </div>
                         <div class="form-group">
@@ -80,7 +80,7 @@
                             <h1>미팅 매물 제안서</h1>
                             <div class="customer-info">
                                 <p><span id="preview-customerName">신호부부</span> 고객님께</p>
-                                <p>미팅 예정일: <span id="preview-meetingDate">2025. 9. 4.</span></p>
+                                <p>미팅 일시: <span id="preview-meetingDate">2025. 9. 4. 14:00</span></p>
                             </div>
                         </div>
                     </div>

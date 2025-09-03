@@ -77,11 +77,24 @@ class ProposalApp {
     // 고객 정보 미리보기 업데이트
     updateCustomerInfo() {
         const customerName = document.getElementById('customerName').value || '고객명';
-        const meetingDate = document.getElementById('meetingDate').value || '날짜 미입력';
+        const meetingDateValue = document.getElementById('meetingDate').value;
         const requirements = document.getElementById('customerRequirements').value || '고객 희망 조건이 여기에 표시됩니다.';
 
+        // 날짜 시간 포맷팅
+        let formattedDate = '일시 미입력';
+        if (meetingDateValue) {
+            const date = new Date(meetingDateValue);
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            formattedDate = `${year}. ${month}. ${day}. ${hours}:${minutes}`;
+        }
+
         document.getElementById('preview-customerName').textContent = customerName;
-        document.getElementById('preview-meetingDate').textContent = meetingDate;
+        document.getElementById('preview-meetingDate').textContent = formattedDate;
         document.getElementById('preview-requirements').textContent = requirements;
     }
 
