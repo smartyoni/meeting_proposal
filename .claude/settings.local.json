@@ -7,7 +7,14 @@
       "Bash(git branch:*)",
       "Bash(git push:*)",
       "Bash(git commit:*)",
-      "Bash(gh repo view:*)"
+      "Bash(gh repo view:*)",
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(svg2png:*)",
+      "Bash(node:*)",
+      "Bash(del generate-icons.js)",
+      "Bash(python:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

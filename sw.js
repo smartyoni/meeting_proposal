@@ -1,17 +1,20 @@
 // 미팅 매물 제안서 PWA - Service Worker
 const CACHE_NAME = 'meeting-proposal-v1.0.0';
-const OFFLINE_URL = '/';
+const OFFLINE_URL = './index.html';
 
 // 캐시할 리소스들
 const CACHE_URLS = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/app.js',
-  '/js/config.js',
-  '/js/firebase.js',
-  '/manifest.json',
-  '/icons/icon.svg',
+  './',
+  './index.html',
+  './css/style.css',
+  './js/app.js',
+  './js/config.js',
+  './js/firebase.js',
+  './manifest.json',
+  './icons/icon.svg',
+  // 생성된 PNG 아이콘들
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png',
   // CDN 리소스
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
